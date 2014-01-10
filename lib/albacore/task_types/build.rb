@@ -175,8 +175,11 @@ module Albacore
       def heuristic_executable
         if ::Rake::Win32.windows?
           trace 'build tasktype finding msbuild.exe'
-          %w{v4.0.30319 v4.0 v3.5 v2.0}.collect { |fw_ver|
-            msb = File.join ENV['WINDIR'], 'Microsoft.NET', 'Framework', fw_ver, 'msbuild.exe'
+          possibilities = ["C:/Program Files (x86)/MSBuild/12.0/Bin/msbuild.exe"]
+          for fw_ver in %w{v4.0.30319 v4.0 v3.5 v2.0} do
+            possibilities.push(File.join ENV['WINDIR'], 'Microsoft.NET', 'Framework', fw_ver, 'msbuild.exe')
+          end
+          possibilities.collect { |msb|
             CrossPlatformCmd.which(msb) ? msb : nil
           }.first
         else
